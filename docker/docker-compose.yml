@@ -3,7 +3,7 @@ name: ms-grpc-go
 services:
   bff-service:
     build:
-      context: ../backend/services/bff
+      context: ../services/bff
       dockerfile: Dockerfile
     container_name: bff-service
     restart: unless-stopped
@@ -13,14 +13,14 @@ services:
       - "8080:8080"
     command: /main
     env_file:
-      - ../backend/services/bff/.env
+      - ../services/bff/.env
     labels:
       - "com.callistix.service=bff"
       - "com.callistix.environment=production"
 
   user-service:
     build:
-      context: ../backend/services/user
+      context: ../services/user
       dockerfile: Dockerfile
     container_name: user-service
     restart: unless-stopped
@@ -30,14 +30,14 @@ services:
       - "50051:50051"
     command: /main
     env_file:
-      - ../backend/services/user/.env
+      - ../services/user/.env
     labels:
       - "com.callistix.service=user"
       - "com.callistix.environment=production"
 
   advice-service:
     build:
-      context: ../backend/services/advice
+      context: ../services/advice
       dockerfile: Dockerfile
     container_name: advice-service
     restart: unless-stopped
@@ -47,7 +47,7 @@ services:
       - "50052:50052"
     command: /main
     env_file:
-      - ../backend/services/advice/.env
+      - ../services/advice/.env
     labels:
       - "com.callistix.service=advice"
       - "com.callistix.environment=production"

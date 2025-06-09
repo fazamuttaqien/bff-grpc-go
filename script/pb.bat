@@ -1,7 +1,7 @@
-cd ../backend/services/user/pb/
+cd ../services/user/pb/
 protoc --go_out=. --go-grpc_out=. user.proto
 
-cd ../../../..
+cd ../../..
 
-cd ../backend/services/advice/pb/
+cd ../services/advice/pb/
 protoc --go_out=. --go-grpc_out=. advice.proto

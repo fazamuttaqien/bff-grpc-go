@@ -1,13 +1,13 @@
 #!/bin/bash
-cd ../backend/services/bff
+cd ../services/bff
 go run main.go & P1=$!
 
-cd ../../..
-cd ../backend/services/user
+cd ../..
+cd ../services/user
 go run main.go & P2=$!
 
-cd ../../..
-cd ../backend/services/advice
+cd ../..
+cd ../services/advice
 go run main.go & P3=$!
 
 wait $P1 $P2 $P3

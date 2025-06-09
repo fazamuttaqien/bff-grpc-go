@@ -1,10 +1,10 @@
-cd ../backend/services/bff
+cd ../services/bff
 start go run main.go
-cd ../../..
+cd ../..
 
-cd ../backend/services/user
+cd ../services/user
 start go run main.go
 
-cd ../../..
-cd ../backend/services/advice
+cd ../..
+cd ../services/advice
 start go run main.go
