@@ -1,0 +1,64 @@
+name: ms-grpc-local
+services:
+  ui:
+    container_name: "ui"
+    image: fazamuttaqien/ms-grpc-ui:v1
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      # Mount SSL certificates from Let's Encrypt
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Moung nginx logs for monitoring
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - ms-grpc-network
+    environment:
+      - TZ=Asia/Jakarta
+    labels:
+      - com.callistix.service=frontend
+      - com.callistix.environment=production
+
+  mongodb:
+    container_name: "mongodb"
+    image: mongo:8.0
+    hostname: mongodb
+    restart: always
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb:/data/db
+      - mongoconfig:/data/configdb
+    env_file:
+      - .env
+    networks:
+      - ms-grpc-network
+    ports:
+      - 27017:27017
+      
+  postgres:
+    container_name: "postgres"
+    image: postgres:17.5-alpine3.21
+    hostname: postgres
+    user: postgres
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    env_file:
+      - .env
+    networks:
+      - ms-grpc-network
+    command: "postgres"
+    ports:
+      - 5432:5432
+
+volumes:
+  mongodb:
+  mongoconfig:
+  postgres:
+  nginx-logs:
+    driver: local
+
+networks:
+  ms-grpc-network:
+    driver: bridge

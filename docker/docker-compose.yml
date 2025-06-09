@@ -1,0 +1,123 @@
+name: ms-grpc-go
+
+services:
+  bff-service:
+    build:
+      context: ../backend/services/bff
+      dockerfile: Dockerfile
+    container_name: bff-service
+    restart: unless-stopped
+    networks:
+      - ms-grpc-network
+    ports:
+      - "8080:8080"
+    command: /main
+    env_file:
+      - ../backend/services/bff/.env
+    labels:
+      - "com.callistix.service=bff"
+      - "com.callistix.environment=production"
+
+  user-service:
+    build:
+      context: ../backend/services/user
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: unless-stopped
+    networks:
+      - ms-grpc-network
+    ports:
+      - "50051:50051"
+    command: /main
+    env_file:
+      - ../backend/services/user/.env
+    labels:
+      - "com.callistix.service=user"
+      - "com.callistix.environment=production"
+
+  advice-service:
+    build:
+      context: ../backend/services/advice
+      dockerfile: Dockerfile
+    container_name: advice-service
+    restart: unless-stopped
+    networks:
+      - ms-grpc-network
+    ports:
+      - "50052:50052"
+    command: /main
+    env_file:
+      - ../backend/services/advice/.env
+    labels:
+      - "com.callistix.service=advice"
+      - "com.callistix.environment=production"
+
+  ui:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: ui
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      # Mount SSL certificates from Let's Encrypt
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # Mount nginx logs for monitoring
+      - ./logs/nginx:/var/log/nginx
+    networks:
+      - ms-grpc-network
+    depends_on:
+      - bff-service
+      - advice-service
+      - user-service
+    environment:
+      - TZ=Asia/Jakarta
+    labels:
+      - "com.callistix.service=frontend"
+      - "com.callistix.environment=production"
+
+  mongodb:
+    container_name: "mongodb"
+    image: mongo:8.0
+    hostname: mongodb
+    restart: always
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodb:/data/db
+      - mongoconfig:/data/configdb
+    env_file:
+      - .env
+    networks:
+      - ms-grpc-network
+    ports:
+      - "27017:27017"
+
+  postgres:
+    container_name: "postgres"
+    image: postgres:17.5-alpine3.21
+    hostname: postgres
+    user: postgres
+    restart: always
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./postgres-init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    env_file:
+      - .env
+    networks:
+      - ms-grpc-network
+    command: "postgres"
+    ports:
+      - "5432:5432"
+
+volumes:
+  mongodb:
+  mongoconfig:
+  postgres:
+  nginx-logs:
+    driver: local
+
+networks:
+  ms-grpc-network:
+    driver: bridge
