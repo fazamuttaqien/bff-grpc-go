@@ -51,7 +51,7 @@ script/start-local.bat
 That's great. Now we can use the app through UI at
 
 ```bash
-http://localhost:3000
+http://localhost:5173
 ```
 
 
