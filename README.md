@@ -18,7 +18,7 @@ You should have Docker installed beforehand.
 `.env` is included. You just need to create network & execute `docker-compose` command
 
 ```bash
-docker network create uid4oe
+docker network create ms-grpc-network
 docker-compose up -d
 ```
 
